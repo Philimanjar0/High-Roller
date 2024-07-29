@@ -1,30 +1,12 @@
-import React from "react";
+import React, {Component} from "react";
+import { useState } from 'react';
 
-class Square extends React.Component {
-    onSquareClick: (a: any) => void;
-    public state: any;
-    constructor (onSquareClick: (a: any) => void, props: React.PropsWithChildren) {
-        super(props)
-        this.state = {
-            value: null
-        };
-        this.onSquareClick = onSquareClick;
-    }
-    render()  {
-        return (
-          <button className="square" onClick={this.onSquareClick}>
-            {this.state.value}
-          </button>
-        );
-    }
+export type SquareProps = {value?: string, handleClick: () => void};
 
-    public setValue(new_value: string) {
-        this.state.value = new_value;
-    }
-
-    public getValue() {
-        return this.state.value;
-    }
+export default function Square(props: SquareProps) {
+    return (
+        <button className="square" onClick={props.handleClick}>
+            {props.value}
+        </button>
+    );
 }
-
-export default Square;

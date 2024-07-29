@@ -1,92 +1,46 @@
 import Square from './Square'
-class Board {
-    squares: Square[];
-    onPlay: (a: any) => any;
-    xIsNext: boolean;
-    status: string;
+import { SquareProps } from './Square';
+import { useState } from 'react';
 
-    constructor(squares: Square[], onPlay: (a: any) => any, xIsNext: boolean) {
-        this.squares = squares;
-        this.onPlay = onPlay;
-        this.xIsNext = xIsNext;
-    }
-
-    calculateWinner(squares: Square[]) {
-        const lines = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6],
-        ];
-        for (let i = 0; i < lines.length; i++) {
-          const [a, b, c] = lines[i];
-          if (squares[a].getValue()){
-          }
-          if (squares[a].getValue() && squares[a].getValue() === squares[b].getValue() && squares[a].getValue() === squares[c].getValue()) {
-                return squares[a].getValue();
-          }
-        }
-        return null;
-    }
-
-    handleClick(i: number): void {
-        if (this.calculateWinner(this.squares)) {
-            console.log("returning cuz winner")
+export default function Board() { 
+    const [squareValues, setSquareValues] = useState(Array(9).fill(null))
+    const [xIsNext, setXIsNext] = useState(true);
+    const [statusMessage, setStatusMessage] = useState("X to start the game");
+    return (
+        <>
+            <div className="status">{statusMessage}</div>
+            <div className="board-row">
+                <Square value={squareValues[0]} handleClick={() => handleClick(0)}/>
+                <Square value={squareValues[1]} handleClick={() => handleClick(1)}/>
+                <Square value={squareValues[2]} handleClick={() => handleClick(2)}/>
+            </div>
+            <div className="board-row">
+                <Square value={squareValues[3]} handleClick={() => handleClick(3)}/>
+                <Square value={squareValues[4]} handleClick={() => handleClick(4)}/>
+                <Square value={squareValues[5]} handleClick={() => handleClick(5)}/>
+            </div>
+            <div className="board-row">
+                <Square value={squareValues[6]} handleClick={() => handleClick(6)}/>
+                <Square value={squareValues[7]} handleClick={() => handleClick(7)}/>
+                <Square value={squareValues[8]} handleClick={() => handleClick(8)}/>
+            </div>
+        </>
+    );
+    
+    function handleClick(address:number) : void {
+        if (squareValues[address]) {
+            setStatusMessage(statusMessage + ": Please play in an empty square")
             return;
         }
-        const nextSquares = this.squares.slice();
-        console.log("Within internal method " + i)
-        if (this.xIsNext) {
-            nextSquares[i].setValue('X');
+        const nextSquares = squareValues.slice();
+        if (xIsNext) {
+            nextSquares[address] = "X";
+            setStatusMessage("O to play")
         } else {
-            nextSquares[i].setValue('O');
+            nextSquares[address] = "O";
+            setStatusMessage("X to play")
         }
-        console.log(nextSquares[i].getValue())
-        const winner = this.calculateWinner(this.squares);
-        let status;
-        if (winner) {
-            status = 'Winner: ' + winner;
-        } else {
-            status = 'Next player: ' + (this.xIsNext ? 'X' : 'O');
-        }
-        this.onPlay(nextSquares);
-    }
-
-    render () {
-        return (
-            <>
-                <div className="status">{status}</div>
-                <div className="board-row">
-                    {(this.createSquare(1).render())}
-                    {(this.createSquare(2).render())}
-                    {(this.createSquare(3).render())}
-                </div>
-                <div className="board-row">
-                    {(this.createSquare(4).render())}
-                    {(this.createSquare(5).render())}
-                    {(this.createSquare(6).render())}
-                </div>
-                <div className="board-row">
-                    {(this.createSquare(7).render())}
-                    {(this.createSquare(8).render())}
-                    {(this.createSquare(9).render())}
-                </div>
-            </>
-        );
-    }
-
-    private createSquare(address: number) : Square {
-        let square: Square = new Square(() => {
-            console.log("handling click for" + address)
-            this.handleClick(address - 1)
-        }, null)
-        this.squares[address - 1] = square;
-        return square;
+        setXIsNext(!xIsNext);
+        setSquareValues(nextSquares);
     }
 }
-
-export default Board;
